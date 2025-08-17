@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auxílio de Mira - Free Fire</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        
+        .crosshair-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        .crosshair {
+            width: 20px;
+            height: 20px;
+            position: relative;
+        }
+        
+        .crosshair::before,
+        .crosshair::after {
+            content: '';
+            position: absolute;
+            background: #00ff00;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .crosshair::before {
+            width: 2px;
+            height: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .crosshair::after {
+            width: 20px;
+            height: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .dot {
+            width: 2px;
+            height: 2px;
+            background: #ff0000;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            pointer-events: auto;
+        }
+        
+        .controls label {
+            display: block;
+            margin: 5px 0;
+        }
+        
+        .controls input[type="color"],
+        .controls input[type="range"] {
+            margin-left: 10px;
+        }
+        
+        .instructions {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="crosshair-container">
+        <div class="crosshair">
+            <div class="dot"></div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <h3>Configurações do Crosshair</h3>
+        <label>
+            Cor:
+            <input type="color" id="colorPicker" value="#00ff00">
+        </label>
+        <label>
+            Tamanho:
+            <input type="range" id="sizeSlider" min="10" max="40" value="20">
+            <span id="sizeValue">20</span>
+        </label>
+        <label>
+            Espessura:
+            <input type="range" id="thicknessSlider" min="1" max="4" value="2">
+            <span id="thicknessValue">2</span>
+        </label>
+        <label>
+            Opacidade:
+            <input type="range" id="opacitySlider" min="0.1" max="1" step="0.1" value="1">
+            <span id="opacityValue">1</span>
+        </label>
+        <label>
+            <input type="checkbox" id="centerDot"> Ponto central
+        </label>
+    </div>
+    
+    <div class="instructions">
+        <strong>Como usar:</strong><br>
+        1. Abra este arquivo no Safari<br>
+        2. Ative o modo de tela cheia<br>
+        3. Ajuste as configurações conforme necessário<br>
+        4. Use como referência visual para mirar<br>
+        <br>
+        <strong>Dica:</strong> Centralize o crosshair na tela do seu dispositivo
+    </div>
+
+    <script>
+        const crosshair = document.querySelector('.crosshair');
+        const dot = document.querySelector('.dot');
+        const colorPicker = document.getElementById('colorPicker');
+        const sizeSlider = document.getElementById('sizeSlider');
+        const thicknessSlider = document.getElementById('thicknessSlider');
+        const opacitySlider = document.getElementById('opacitySlider');
+        const centerDot = document.getElementById('centerDot');
+        
+        function updateCrosshair() {
+            const size = sizeSlider.value;
+            const thickness = thicknessSlider.value;
+            const color = colorPicker.value;
+            const opacity = opacitySlider.value;
+            
+            crosshair.style.width = size + 'px';
+            crosshair.style.height = size + 'px';
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                .crosshair::before, .crosshair::after {
+                    background: ${color};
+                    opacity: ${opacity};
+                }
+                .crosshair::before {
+                    width: ${thickness}px;
+                    height: ${size}px;
+                }
+                .crosshair::after {
+                    width: ${size}px;
+                    height: ${thickness}px;
+                }
+                .dot {
+                    background: ${color};
+                    opacity: ${opacity};
+                }
+            `;
+            
+            document.head.appendChild(style);
+            
+            dot.style.display = centerDot.checked ? 'block' : 'none';
+            
+            document.getElementById('sizeValue').textContent = size;
+            document.getElementById('thicknessValue').textContent = thickness;
+            document.getElementById('opacityValue').textContent = opacity;
+        }
+        
+        colorPicker.addEventListener('input', updateCrosshair);
+        sizeSlider.addEventListener('input', updateCrosshair);
+        thicknessSlider.addEventListener('input', updateCrosshair);
+        opacitySlider.addEventListener('input', updateCrosshair);
+        centerDot.addEventListener('change', updateCrosshair);
+        
+        // Initialize
+        updateCrosshair();
+        
+        // Fullscreen functionality
+        document.addEventListener('dblclick', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>
+
+
